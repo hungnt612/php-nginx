@@ -1,15 +1,15 @@
 FROM debian:buster
 
-LABEL maintainer="Colin Wilson colin@wyveo.com"
-
-# Let the container know that there is no tty
+LABEL maintainer="hungnt.jits"
+WORKDIR /usr/share/nginx/html
+# Let the container know that there is no tty :D hehe
 ENV DEBIAN_FRONTEND noninteractive
 ENV NGINX_VERSION 1.19.10-1~buster
 ENV php_conf /etc/php/7.4/fpm/php.ini
 ENV fpm_conf /etc/php/7.4/fpm/pool.d/www.conf
 ENV COMPOSER_VERSION 1.10.22
 
-# Install Basic Requirements
+# Install Basic Requirements ne`
 RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
     && set -x \
     && apt-get update \
@@ -60,6 +60,7 @@ RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
             php7.4-pgsql \
             php7.4-intl \
             php7.4-xml \
+            php7.4-imap \
             php-pear \
     && pecl -d php_suffix=7.4 install -o -f redis memcached \
     && mkdir -p /run/php \
@@ -105,10 +106,11 @@ COPY ./supervisord.conf /etc/supervisord.conf
 
 # Override nginx's default config
 COPY ./default.conf /etc/nginx/conf.d/default.conf
-
 # Override default nginx welcome page
 COPY html /usr/share/nginx/html
-
+RUN composer install
+# Tao them folder cua mautic - khong hieu sao luc chay len lai thieu :D 
+RUN mkdir -p /usr/share/nginx/html/translations 
 # Copy Scripts
 COPY ./start.sh /start.sh
 
